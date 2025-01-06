@@ -1,4 +1,4 @@
-This project includes multiple NSHA models, including lifting coil model, transfer coil model, risk model, controller model, and these NSHA models constitute the NRCPS system.
+This project includes multiple NSHA models, including lifting coil model, transfer coil model, risk model, controller model, and these NSHA models constitute the NRCPS system. These models is showed in the NRCPS.XML.
 
 
 In addition to the NSHA model of NRCPS, we also performed accessibility analysis on these models and displayed them in the symbolic simulator. 
