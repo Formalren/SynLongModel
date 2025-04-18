@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+broadcast chan warn, danger, safe;
+broadcast chan move,open,start,step_transfer,stop_succ,stop_fail,pull_up,drop;
+broadcast chan severe,risk1,risk2,risk3,risk4;
+
+//clock S_drop,S_pull_up,S_normal;
+//clock V_drop,V_pull_up,V_normal;
+//double h_normal,h_pull_up,h_drop;
+int init_height;
+clock h;
+
+</declaration>
+	<template>
+		<name>ClampingCoil</name>
+		<location id="id0" x="-76" y="0">
+			<name x="-127" y="-34">lock</name>
+			<label kind="exponentialrate" x="-144" y="17">init_height</label>
+		</location>
+		<location id="id1" x="76" y="-25">
+			<name x="51" y="-59">normal</name>
+		</location>
+		<location id="id2" x="212" y="0">
+			<name x="221" y="17">unlock</name>
+		</location>
+		<location id="id3" x="76" y="51">
+			<name x="93" y="42">Unormal</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id4">
+			<source ref="id3"/>
+			<target ref="id2"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-8" y="8">step_transfer?</label>
+		</transition>
+		<transition id="id6">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<nail x="-17" y="-59"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="59" y="-110">stop_succ?</label>
+			<nail x="212" y="-85"/>
+			<nail x="-76" y="-85"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="119" y="-34">severe?</label>
+		</transition>
+		<transition id="id9">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-25" y="-34">open?</label>
+		</transition>
+	</template>
+	<template>
+		<name>risk</name>
+		<parameter>const int level1,const int level2,const int level3</parameter>
+		<location id="id10" x="-136" y="-51">
+			<label kind="exponentialrate" x="-238" y="-60">init_height</label>
+		</location>
+		<location id="id11" x="68" y="-51">
+			<name x="59" y="-85">RISK2</name>
+			<label kind="exponentialrate" x="76" y="-51">init_height</label>
+		</location>
+		<location id="id12" x="68" y="42">
+			<name x="68" y="8">RISK3</name>
+			<label kind="exponentialrate" x="42" y="51">init_height</label>
+		</location>
+		<location id="id13" x="68" y="-144">
+			<name x="85" y="-153">RISK1</name>
+			<label kind="exponentialrate" x="25" y="-178">init_height</label>
+		</location>
+		<branchpoint id="id14" x="-42" y="-51"/>
+		<init ref="id10"/>
+		<transition id="id15">
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-51" y="-238">risk2!</label>
+			<nail x="161" y="-51"/>
+			<nail x="161" y="-212"/>
+			<nail x="-187" y="-212"/>
+			<nail x="-187" y="-85"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id12"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-102" y="25">risk3!</label>
+			<nail x="-17" y="42"/>
+			<nail x="-136" y="42"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id13"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-93" y="-144">risk1!</label>
+			<nail x="-136" y="-144"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="probability" x="-17" y="-119">level1</label>
+			<nail x="-42" y="-110"/>
+		</transition>
+		<transition id="id19">
+			<source ref="id14"/>
+			<target ref="id12"/>
+			<label kind="probability" x="-17" y="0">level3</label>
+			<nail x="-42" y="8"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="probability" x="-17" y="-51">level2</label>
+		</transition>
+		<transition id="id21">
+			<source ref="id10"/>
+			<target ref="id14"/>
+			<nail x="-85" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">TransferCoil</name>
+		<parameter>const int drop,const int no_change,const int pull_up,const int slight_acc,const int no_acc,const int severe_acc</parameter>
+		<declaration>// Place local declarations here.
+
+
+
+//int[0,100] init_rate;
+broadcast chan step_transfer,move,stop;
+//double h_normal,h_pull_up,h_drop;
+//double Time_Normal(const double &amp;i,const double &amp;j){
+  //return i  ;
+//}
+//double Normal(const double &amp;i,const double &amp;j){
+  
+ // return i ;
+//}</declaration>
+		<location id="id22" x="-365" y="17">
+			<name x="-425" y="-25">Decide</name>
+			<label kind="exponentialrate" x="-467" y="8">init_height</label>
+		</location>
+		<location id="id23" x="8" y="-119">
+			<name x="-17" y="-153">DROP_DOWN</name>
+		</location>
+		<location id="id24" x="0" y="17">
+			<name x="-34" y="-25">NO_CHANGE</name>
+		</location>
+		<location id="id25" x="17" y="127">
+			<name x="34" y="119">PULL_UP</name>
+		</location>
+		<location id="id26" x="340" y="-119">
+			<name x="255" y="-161">SMALL_ACCIDENT</name>
+		</location>
+		<location id="id27" x="340" y="17">
+			<name x="331" y="-17">NO_ACCIDENT</name>
+		</location>
+		<location id="id28" x="340" y="127">
+			<name x="238" y="144">SEVERE_ACCIDENT</name>
+		</location>
+		<location id="id29" x="-170" y="17">
+			<name x="-246" y="-34">STEP_TRANSFER</name>
+			<label kind="exponentialrate" x="-229" y="34">init_height</label>
+			<committed/>
+		</location>
+		<location id="id30" x="85" y="17">
+			<name x="76" y="-25">STOP</name>
+		</location>
+		<branchpoint id="id31" x="144" y="17"/>
+		<init ref="id22"/>
+		<transition id="id32">
+			<source ref="id29"/>
+			<target ref="id25"/>
+		</transition>
+		<transition id="id33">
+			<source ref="id29"/>
+			<target ref="id24"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id29"/>
+			<target ref="id23"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id27"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="358" y="0">stop_succ!</label>
+			<nail x="518" y="17"/>
+			<nail x="518" y="221"/>
+			<nail x="-365" y="221"/>
+		</transition>
+		<transition id="id36">
+			<source ref="id25"/>
+			<target ref="id30"/>
+		</transition>
+		<transition id="id37">
+			<source ref="id23"/>
+			<target ref="id30"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id30"/>
+			<target ref="id31"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id24"/>
+			<target ref="id30"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id26"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="399" y="-127">stop_fail!</label>
+			<nail x="399" y="-170"/>
+			<nail x="399" y="-68"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id28"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="408" y="110">stop_fail!</label>
+			<nail x="399" y="76"/>
+			<nail x="399" y="161"/>
+		</transition>
+		<transition id="id42">
+			<source ref="id22"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-357" y="25">step_transfer?</label>
+		</transition>
+		<transition id="id43">
+			<source ref="id28"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-119" y="153">stop_succ!</label>
+			<nail x="340" y="169"/>
+			<nail x="340" y="178"/>
+			<nail x="331" y="178"/>
+			<nail x="-365" y="178"/>
+			<nail x="-365" y="169"/>
+		</transition>
+		<transition id="id44">
+			<source ref="id26"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-136" y="-221">stop_succ!</label>
+			<nail x="340" y="-195"/>
+			<nail x="-365" y="-195"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id31"/>
+			<target ref="id28"/>
+			<label kind="probability" x="178" y="76">severe_acc</label>
+		</transition>
+		<transition id="id46">
+			<source ref="id31"/>
+			<target ref="id27"/>
+			<label kind="probability" x="187" y="-8">no_acc</label>
+		</transition>
+		<transition id="id47">
+			<source ref="id31"/>
+			<target ref="id26"/>
+			<label kind="probability" x="187" y="-85">slight_acc</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">LiftingCoil</name>
+		<parameter>const int have_acc,const int no_acc,const int slight_acc,const int severe_acc</parameter>
+		<declaration>// Place local declarations here.
+
+
+//int H;
+//int init_rate;
+//clock S_pull_up,S_drop,S_normal;
+//clock V_drop,V_pull_up,V_normal;
+//double h_normal,h_pull_up,h_drop;
+//double Time_Normal(const double &amp;i,const double &amp;j){
+ // return i || j ;
+//}
+//double Normal(const double &amp;i,const double &amp;j){
+  
+  //return i || j;
+//}</declaration>
+		<location id="id48" x="-442" y="0">
+			<name x="-484" y="-34">Judge</name>
+			<label kind="exponentialrate" x="-510" y="8">init_height</label>
+			<committed/>
+		</location>
+		<location id="id49" x="-442" y="-102">
+			<name x="-476" y="-136">PULL_UP</name>
+			<label kind="exponentialrate" x="-425" y="-110">init_height</label>
+		</location>
+		<location id="id50" x="-255" y="0">
+			<name x="-297" y="-34">UNCHANGE</name>
+			<label kind="exponentialrate" x="-265" y="34">init_height</label>
+			<committed/>
+		</location>
+		<location id="id51" x="-442" y="85">
+			<name x="-467" y="93">DROP_DOWN</name>
+			<label kind="exponentialrate" x="-357" y="119">init_height</label>
+		</location>
+		<location id="id52" x="-17" y="-93">
+			<name x="-34" y="-127">MOVE</name>
+			<label kind="exponentialrate" x="-127" y="-110">init_height</label>
+			<committed/>
+		</location>
+		<location id="id53" x="-17" y="85">
+			<name x="-8" y="102">Keep</name>
+			<label kind="exponentialrate" x="-17" y="127">init_height</label>
+		</location>
+		<location id="id54" x="-637" y="0">
+			<name x="-799" y="-17">Position_suitable</name>
+			<label kind="exponentialrate" x="-671" y="8">init_height</label>
+		</location>
+		<location id="id55" x="102" y="-144">
+			<name x="-8" y="-178">SMALL_ACCIDENT</name>
+			<label kind="exponentialrate" x="0" y="-161">init_height</label>
+		</location>
+		<location id="id56" x="102" y="-51">
+			<name x="25" y="-34">SEVERE_ACCIDENT</name>
+			<label kind="exponentialrate" x="34" y="-17">init_height</label>
+		</location>
+		<branchpoint id="id57" x="42" y="-93"/>
+		<branchpoint id="id58" x="-119" y="0"/>
+		<init ref="id54"/>
+		<transition id="id59">
+			<source ref="id48"/>
+			<target ref="id51"/>
+			<label kind="guard" x="-442" y="17">h&gt;20</label>
+			<label kind="synchronisation" x="-442" y="34">drop!</label>
+		</transition>
+		<transition id="id60">
+			<source ref="id48"/>
+			<target ref="id49"/>
+			<label kind="guard" x="-433" y="-85">h&lt;5</label>
+			<label kind="synchronisation" x="-442" y="-68">pull_up!</label>
+		</transition>
+		<transition id="id61">
+			<source ref="id56"/>
+			<target ref="id56"/>
+			<label kind="synchronisation" x="153" y="-68">stop_fail!</label>
+			<nail x="169" y="-85"/>
+			<nail x="169" y="0"/>
+		</transition>
+		<transition id="id62">
+			<source ref="id55"/>
+			<target ref="id55"/>
+			<label kind="synchronisation" x="153" y="-161">stop_fail!</label>
+			<nail x="170" y="-195"/>
+			<nail x="170" y="-102"/>
+		</transition>
+		<transition id="id63">
+			<source ref="id56"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-348" y="178">stop_succ!</label>
+			<nail x="102" y="195"/>
+			<nail x="-637" y="195"/>
+		</transition>
+		<transition id="id64">
+			<source ref="id55"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-459" y="-221">stop_succ!</label>
+			<nail x="102" y="-195"/>
+			<nail x="-637" y="-195"/>
+		</transition>
+		<transition id="id65">
+			<source ref="id57"/>
+			<target ref="id56"/>
+			<label kind="probability" x="-17" y="-76">severe_acc</label>
+		</transition>
+		<transition id="id66">
+			<source ref="id57"/>
+			<target ref="id55"/>
+			<label kind="probability" x="8" y="-127">slight_acc</label>
+		</transition>
+		<transition id="id67">
+			<source ref="id52"/>
+			<target ref="id57"/>
+		</transition>
+		<transition id="id68">
+			<source ref="id52"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-246" y="-119">move?</label>
+			<nail x="-306" y="-93"/>
+		</transition>
+		<transition id="id69">
+			<source ref="id51"/>
+			<target ref="id54"/>
+			<nail x="-637" y="85"/>
+		</transition>
+		<transition id="id70">
+			<source ref="id49"/>
+			<target ref="id54"/>
+			<nail x="-637" y="-102"/>
+		</transition>
+		<transition id="id71">
+			<source ref="id50"/>
+			<target ref="id58"/>
+		</transition>
+		<transition id="id72">
+			<source ref="id54"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-561" y="-25">move?</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id53"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-204" y="110">step_transfer!</label>
+			<nail x="-17" y="136"/>
+			<nail x="-637" y="136"/>
+		</transition>
+		<transition id="id74">
+			<source ref="id48"/>
+			<target ref="id50"/>
+			<label kind="guard" x="-399" y="-25">h&gt;=5&amp;&amp;h&lt;=15</label>
+			<nail x="-391" y="0"/>
+		</transition>
+		<transition id="id75">
+			<source ref="id58"/>
+			<target ref="id53"/>
+			<label kind="probability" x="-136" y="25">no_acc</label>
+		</transition>
+		<transition id="id76">
+			<source ref="id58"/>
+			<target ref="id52"/>
+			<label kind="probability" x="-144" y="-51">have_acc</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">controller</name>
+		<declaration>// Place local declarations here.
+
+//int init_rate;
+//double t_delay;
+
+</declaration>
+		<location id="id77" x="-425" y="-59">
+			<name x="-442" y="-93">STOP</name>
+			<label kind="exponentialrate" x="-527" y="-68">init_height</label>
+		</location>
+		<location id="id78" x="-263" y="-59">
+			<name x="-306" y="-93">TRANSFER</name>
+		</location>
+		<location id="id79" x="-144" y="-59">
+			<name x="-161" y="-102">MOVE</name>
+		</location>
+		<location id="id80" x="-42" y="-59">
+			<name x="-93" y="-102">STEP_TRANSFER</name>
+			<label kind="exponentialrate" x="-59" y="-42">init_height</label>
+			<committed/>
+		</location>
+		<location id="id81" x="51" y="-59">
+			<name x="0" y="-110">emergency_stop</name>
+		</location>
+		<init ref="id77"/>
+		<transition id="id82">
+			<source ref="id78"/>
+			<target ref="id80"/>
+			<label kind="guard" x="-144" y="-136">h&gt;=5&amp;&amp;h&lt;=15</label>
+			<label kind="synchronisation" x="-195" y="-136">risk1?</label>
+			<nail x="-144" y="-119"/>
+		</transition>
+		<transition id="id83">
+			<source ref="id78"/>
+			<target ref="id79"/>
+			<label kind="guard" x="-221" y="-59">h&gt;0</label>
+			<label kind="synchronisation" x="-229" y="-76">move!</label>
+		</transition>
+		<transition id="id84">
+			<source ref="id81"/>
+			<target ref="id81"/>
+			<label kind="guard" x="161" y="-119">h&gt;=20</label>
+			<label kind="synchronisation" x="144" y="-68">risk3?</label>
+			<nail x="127" y="-127"/>
+			<nail x="127" y="-8"/>
+		</transition>
+		<transition id="id85">
+			<source ref="id81"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-84" y="-8">stop_fail?</label>
+			<nail x="-42" y="42"/>
+		</transition>
+		<transition id="id86">
+			<source ref="id79"/>
+			<target ref="id77"/>
+			<label kind="synchronisation" x="-263" y="-17">risk2?</label>
+			<label kind="assignment" x="-305" y="0">h:=0</label>
+			<nail x="-144" y="0"/>
+			<nail x="-323" y="0"/>
+		</transition>
+		<transition id="id87">
+			<source ref="id81"/>
+			<target ref="id77"/>
+			<label kind="synchronisation" x="-178" y="-187">stop_succ!</label>
+			<nail x="-59" y="-161"/>
+			<nail x="-212" y="-161"/>
+		</transition>
+		<transition id="id88">
+			<source ref="id80"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="-25" y="-85">severe!</label>
+		</transition>
+		<transition id="id89">
+			<source ref="id79"/>
+			<target ref="id80"/>
+			<label kind="guard" x="-136" y="-85">h&gt;=5&amp;&amp;h&lt;=15</label>
+			<label kind="synchronisation" x="-102" y="-51">risk1?</label>
+		</transition>
+		<transition id="id90">
+			<source ref="id77"/>
+			<target ref="id78"/>
+			<label kind="synchronisation" x="-399" y="-59">step_transfer!</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Transfer = TransferCoil(10,10000,10,100000,1,10000000);
+Lifting = LiftingCoil(1,9999999,10,100);
+RISK = risk(1,10,10000000);
+// List one or more processes to be composed into a system.
+system Lifting,Transfer,controller,RISK,ClampingCoil;
+    </system>
+	<queries>
+		<option key="--alpha" value="0.05"/>
+		<option key="--histogram-bar-count" value="50"/>
+		<option key="--histogram-bar-width" value="6.0"/>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; controller.emergency_stop)</formula>
+			<comment/>
+			<result outcome="success" type="interval" value="≤ 0.0499441 (95% CI)" timestamp="2024-05-08 14:15:14 +0800">
+				<option key="--alpha" value="0.05"/>
+				<option key="--histogram-bar-count" value="50"/>
+				<option key="--histogram-bar-width" value="6.0"/>
+				<details>≤ 0.0499441 (95% CI)</details>
+			</result>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100000000](&lt;&gt; h&gt;5&amp;&amp;h&lt;20)</formula>
+			<comment/>
+			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2024-05-08 14:15:06 +0800">
+				<option key="--alpha" value="0.05"/>
+				<option key="--histogram-bar-count" value="50"/>
+				<option key="--histogram-bar-width" value="6.0"/>
+				<details>≥ 0.950056 (95% CI)</details>
+				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
+					<series title="density" type="b(6.000000)" color="0x0000ff" encoding="csv">5.000002001,0.16666666666666666
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,0.16666666666666666
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Probability Density Confidence Intervals" xaxis="run duration in time" yaxis="probability density">
+					<series title="upper limit" type="b(6.000000)" color="0xa0a0ff" encoding="csv">5.000002001,1.0
+					</series>
+					<series title="lower limit" type="b(6.000000)" color="0x0000ff" encoding="csv">5.000002001,0.9500559162941453
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,0.16666666666666666
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Probability Distribution" xaxis="run duration in time" yaxis="probability">
+					<series title="probability" type="b(6.000000)" color="0x0000ff" encoding="csv">5.000002001,1.0
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,1.0
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
+					<series title="upper limit" type="b(6.000000)" color="0xa0a0ff" encoding="csv">5.000002001,1.0
+					</series>
+					<series title="lower limit" type="b(6.000000)" color="0x0000ff" encoding="csv">5.000002001,0.9500559162941453
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,1.0
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Cumulative Probability Distribution" xaxis="run duration in time" yaxis="probability">
+					<series title="cumulative" type="l" color="0x000000" encoding="csv">5.000002001,0.0
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,1.0
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Cumulative Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
+					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">5.000002001,0.04994408370585468
+					</series>
+					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">5.000002001,0.0
+					</series>
+					<series title="cumulative" type="l" color="0x000000" encoding="csv">5.000002001,0.0
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,1.0
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+				<plot title="Frequency Histogram" xaxis="run duration in time" yaxis="count">
+					<series title="count" type="b(6.000000)" color="0x0000ff" encoding="csv">5.000002001,72.0
+					</series>
+					<series title="average" type="pl" color="0x00dd00" encoding="csv">5.000002001,0.0
+5.000002001,72.0
+					</series>
+					<comment>Parameters: α=0.05, ε=0.05, bucket width=6, bucket count=1
+Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
+Span of displayed sample: [5.000002001, 5.000002001]
+Mean estimate of displayed sample: ≈ 5.000002001</comment>
+				</plot>
+			</result>
+		</query>
+		<query>
+			<formula>Pr[&lt;=2000000](&lt;&gt; Ch.MOVE)</formula>
+			<comment/>
+			<result outcome="success" type="interval" value="≤ 0.0499441 (95% CI)" timestamp="2024-05-08 14:15:09 +0800">
+				<option key="--alpha" value="0.05"/>
+				<option key="--histogram-bar-count" value="50"/>
+				<option key="--histogram-bar-width" value="6.0"/>
+				<details>≤ 0.0499441 (95% CI)</details>
+			</result>
+		</query>
+		<query>
+			<formula>Pr[&lt;=2000000000](&lt;&gt; PULL.NO_ACCIDENT)</formula>
+			<comment/>
+			<result outcome="success" type="interval" value="≤ 0.0499441 (95% CI)" timestamp="2024-05-08 14:15:12 +0800">
+				<option key="--alpha" value="0.05"/>
+				<option key="--histogram-bar-count" value="50"/>
+				<option key="--histogram-bar-width" value="6.0"/>
+				<details>≤ 0.0499441 (95% CI)</details>
+			</result>
+		</query>
+	</queries>
+</nta>
